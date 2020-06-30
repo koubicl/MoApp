@@ -1,7 +1,6 @@
+package com.example.mrfox
+
 import org.jsoup.Jsoup
-import org.jsoup.select.Elements
-import java.util.*
-import kotlin.collections.ArrayList
 
 fun GetValuesFromElements() : ArrayList<String> {
 
@@ -11,10 +10,12 @@ fun GetValuesFromElements() : ArrayList<String> {
 //
 //    return nameOfService
     val vals = arrayListOf<String>()
-    val url = "https://www.mrfox.cz/sluzby" // or whatever goes here
+    val url = "https://www.mrfox.cz/sluzby"
+
     val document =
         Jsoup.connect(url).followRedirects(false).timeout(60000 /*wait up to 60 sec for response*/).get()
     val values = document.body().select(".service-item" /*css selector*/)
+
 
     if (values != null){
         for (i in 0 until values.count()){
@@ -84,7 +85,7 @@ fun GetPricesFromElementValues() : ArrayList<MutableMap<String, String>> {
             var bigEndAt = 0
             while (!priceBig!![bigEndAt].isLetter()){
                 bigEndAt++
-                }
+            }
 
             val priceB = priceBig.subSequence(0, bigEndAt - 3).toString()
 
@@ -106,6 +107,16 @@ fun GetPricesFromElementValues() : ArrayList<MutableMap<String, String>> {
     return pricesList
 }
 
-fun main(args: Array<String>) {
-    println(GetPricesFromElementValues())
+fun CompleteDataFromElements() : ArrayList<Map<String, String>>{
+    val names = GetNamesFromElementValues()
+    val duration = GetDurationFromElementValues()
+    val prices = GetPricesFromElementValues()
+    val data = arrayListOf<Map<String, String>>()
+
+    for (n in 0 until names.count()){
+        val completeData = mapOf("service" to names[n], "duration" to duration[n], "prices" to prices[n])
+        data.add(completeData as Map<String, String>)
+    }
+    return data
 }
+
